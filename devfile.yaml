@@ -1,5 +1,6 @@
+apiVersion: 1.0.0
 metadata:
-  generateName: state-machine-assistant-
+  generateName: ronin-1-
 projects:
   - name: ronin-1
     source:
@@ -12,37 +13,52 @@ projects:
       type: git
       branch: main
 components:
-  - id: redhat/java/latest
-    memoryLimit: 2048Mi
-    type: chePlugin
-  - id: che-incubator/typescript/latest
-    memoryLimit: 512Mi
+  - id: redhat/quarkus-java11/latest
     type: chePlugin
   - mountSources: true
     endpoints:
-      - name: 8080/tcp
+      - name: 8080-ui
         port: 8080
-      - name: 8090/tcp
-        port: 8090
-      - name: 9090/tcp
-        port: 9090
-      - name: 4200/tcp
+      - name: 8081-tests
+        port: 8081
+      - name: 8082-fight
+        port: 8082
+      - name: 8083-hero
+        port: 8083
+      - name: 8084-villain
+        port: 8084
+      - name: 4200-ui
         port: 4200
-    memoryLimit: 2048Mi
+      - attributes:
+          path: /swagger-ui
+        name: swagger-ui-fights
+        port: 8082
+    memoryLimit: 3072Mi
     type: dockerimage
     volumes:
       - name: m2
-        containerPath: /home/user/.m2
-    alias: tools
-    image: 'quay.io/cvicensa/cnw-che-stack:7.19.2'
+        containerPath: /home/jboss/.m2
+    alias: maven
+    image: 'quay.io/cvicens/crw-quarkus-stack:2.5'
     env:
-      - value: >-
-          -XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10
-          -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4
-          -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true
-          -Xms20m -Djava.security.egd=file:/dev/./urandom
-          -Duser.home=/home/user
+      - value: '-XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom -Duser.home=/home/jboss'
         name: JAVA_OPTS
       - value: $(JAVA_OPTS)
         name: MAVEN_OPTS
-apiVersion: 1.0.0
+commands:
+  - name: Attach remote debugger
+    actions:
+      - referenceContent: |
+          {
+            "version": "0.2.0",
+            "configurations": [
+              {
+                "type": "java",
+                "request": "attach",
+                "name": "Attach to Remote Quarkus App",
+                "hostName": "localhost",
+                "port": 5005
+              }
+            ]
+          }
+        type: vscode-launch
