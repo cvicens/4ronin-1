@@ -1,12 +1,12 @@
 metadata:
   generateName: state-machine-assistant-
 projects:
-  - name: state-machine-assistant
+  - name: ronin-1
     source:
       location: 'https://github.com/cvicens/4ronin-1.git'
       type: git
       branch: master
-  - name: state-machine-assistant
+  - name: ronin-2
     source:
       location: 'https://github.com/cvicens/4ronin-2.git'
       type: git
